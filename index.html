@@ -432,10 +432,18 @@ function renderForm(fields) {
 
   const fieldList = Array.isArray(fields) ? fields : [];
 
-  fieldList.forEach(field => {
+  fieldList.forEach((field, index) => {
     const normalizedField = { ...field };
     if (!normalizedField.type) {
-      normalizedField.type = 'long_text';
+      const fallbackTypes = ['multiple_choice', 'true_false', 'short_answer', 'long_text', 'rating_scale'];
+      normalizedField.type = fallbackTypes[index % fallbackTypes.length];
+    }
+
+    if ((normalizedField.type === 'multiple_choice' || normalizedField.type === 'rating_scale' || normalizedField.type === 'select_rubric') && !normalizedField.options) {
+      normalizedField.options = ['Option A', 'Option B', 'Option C', 'Option D'];
+    }
+    if (normalizedField.type === 'true_false' && !normalizedField.options) {
+      normalizedField.options = ['True', 'False'];
     }
 
     const group = document.createElement('div');
