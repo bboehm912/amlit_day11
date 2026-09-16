@@ -383,19 +383,16 @@ function renderResources(resources) {
   const container = document.getElementById('resource-list');
   container.innerHTML = '';
 
-  const resourceList = Array.isArray(resources) ? resources : (resources && typeof resources === 'object' ? [resources] : []);
-  resourceList.push(
-    {
-      title: "Jonathan Edwards - 'Sinners in the Hands of an Angry God' (1741)",
-      file: "Jonathan+Edwards+-+'Sinners+in+the+Hands+of+an+Angry+God'+(1741).pdf",
-      description: "Primary sermon PDF"
-    },
-    {
-      title: "Ethos/Pathos/Logos Matrix",
-      file: "Ethos_Pathos_Logos_Matrix.pdf",
-      description: "Rhetorical analysis organizer"
-    }
-  );
+  const rawList = Array.isArray(resources) ? resources : (resources && typeof resources === 'object' ? [resources] : []);
+  const seen = new Set();
+  const resourceList = rawList.filter(res => {
+    const key = typeof res === 'string'
+      ? res
+      : (res.file || res.link || res.url || res.title || res.name || '').toString();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 
   resourceList.forEach(res => {
     const card = document.createElement('div');
